@@ -145,7 +145,7 @@ def main():
     print("Generating event labels...")
     eClips = []
     for e in events:
-        clip = TextClip(e["type"], fontsize=60, color='white', bg_color='black' )
+        clip = TextClip(e["type"], fontsize=60, color='white' )
         date, time = e["ts"]
         dt = datetime.datetime(date[0], date[1], date[2], time[0], time[1], time[2])
         offset = (dt - dtStart).seconds
@@ -157,7 +157,7 @@ def main():
     print("Generating data message...")
     # Just add these to the eClips
     for e in dataChannel:
-        clip = TextClip(e["data"], fontsize=60, color='green', bg_color='black' )
+        clip = TextClip(e["data"], fontsize=40, color='green' )
         date, time = e["ts"]
         dt = datetime.datetime(date[0], date[1], date[2], time[0], time[1], time[2])
         offset = (dt - dtStart).seconds
