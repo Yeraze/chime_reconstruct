@@ -25,9 +25,6 @@ def parse_date2(date_string):
     return date, time, ms
 
 
-# Iterate over all .txt files in the meeting-events directory
-# Input: None
-# Output: None
 def main():
     import os
     import json
