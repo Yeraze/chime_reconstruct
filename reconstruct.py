@@ -39,6 +39,7 @@ def main():
 
     tsStart = None
     tsEnd = None
+    events = []
 
     # Iterate over all .txt files
     for file in files:
@@ -57,6 +58,13 @@ def main():
                     date, time = parse_date(data["Timestamp"])
                     print("Found End")
                     tsEnd = (date, time)
+
+                if data["EventType"] != "ActiveSpeaker":
+                    date, time = parse_date(data["Timestamp"])
+                    event = dict()
+                    event["ts"] = (date, time)
+                    event["type"] = data["EventType"]
+                    events.append(event)
 
 
     print("Recording started at %s %s" % (tsStart[0], tsStart[1]))
@@ -117,6 +125,23 @@ def main():
         aClips.append(audio)
 
 
+
+    print("Generating event labels...")
+    eClips = []
+    for e in events:
+        clip = TextClip(e["type"], fontsize=70, color='white', bg_color='black' )
+        date, time = e["ts"]
+        dt = datetime.datetime(date[0], date[1], date[2], time[0], time[1], time[2])
+        offset = (dt - dtStart).seconds
+        clip = clip.set_start(offset)
+        clip = clip.set_duration(1)
+        clip = clip.set_pos(("left", "top"))
+        eClips.append(clip)
+
+    print("Preparing event comp:")
+    CompEvents = CompositeVideoClip(eClips)
+    CompEvents = CompEvents.set_duration(sDuration)
+
     print("Preparing audio comp: %s seconds" % aDuration)
     CompAudio = CompositeAudioClip(aClips)
     CompAudio = CompAudio.set_duration(sDuration)
@@ -124,10 +149,13 @@ def main():
     CompVideo = CompositeVideoClip(vClips)
     CompVideo = CompVideo.set_duration(sDuration)
 
+    FinalVideo = CompositeVideoClip([CompVideo, CompEvents])
+    FinalVideo = FinalVideo.set_duration(sDuration)
+    FinalVideo.audio = CompAudio
 
-    CompVideo.audio = CompAudio
+
     print("Writing to output.mp4")
-    CompVideo = CompVideo.write_videofile("output.mp4", fps=24, audio_codec='aac', threads=8, codec='libx264')
+    FinalVideo = FinalVideo.write_videofile("output.mp4", fps=24, audio_codec='aac', threads=8, codec='libx264')
     print("Done!")
 
 
