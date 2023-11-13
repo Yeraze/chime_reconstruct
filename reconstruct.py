@@ -63,6 +63,25 @@ def main():
                     event["type"] = data["EventType"]
                     events.append(event)
 
+    # Now do the same for the data-channel
+    path = os.path.join(os.getcwd(), "data-channel")
+    files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and f.endswith(".txt")]
+    dataChannel = []
+
+    # Iterate over all .txt files
+    for file in files:
+        # Open the file
+        with open(os.path.join(path, file), "r") as f:
+            # iterate over every line in file f
+            for line in f:
+                # Parse the line as a JSON object
+                data = json.loads(line)
+            
+                date, time = parse_date(data["Timestamp"])
+                msg = dict()
+                msg["ts"] = (date, time)
+                msg["data"] = data["Data"]
+                dataChannel.append(msg)
 
     print("Recording started at %s %s" % (tsStart[0], tsStart[1]))
 
@@ -126,7 +145,7 @@ def main():
     print("Generating event labels...")
     eClips = []
     for e in events:
-        clip = TextClip(e["type"], fontsize=70, color='white', bg_color='black' )
+        clip = TextClip(e["type"], fontsize=60, color='white', bg_color='black' )
         date, time = e["ts"]
         dt = datetime.datetime(date[0], date[1], date[2], time[0], time[1], time[2])
         offset = (dt - dtStart).seconds
@@ -134,6 +153,19 @@ def main():
         clip = clip.set_duration(1)
         clip = clip.set_pos(("left", "top"))
         eClips.append(clip)
+
+    print("Generating data message...")
+    # Just add these to the eClips
+    for e in dataChannel:
+        clip = TextClip(e["data"], fontsize=60, color='green', bg_color='black' )
+        date, time = e["ts"]
+        dt = datetime.datetime(date[0], date[1], date[2], time[0], time[1], time[2])
+        offset = (dt - dtStart).seconds
+        clip = clip.set_start(offset)
+        clip = clip.set_duration(2)
+        clip = clip.set_pos(("left", "bottom"))
+        eClips.append(clip)       
+
 
     print("Preparing event comp:")
     CompEvents = CompositeVideoClip(eClips)
@@ -143,16 +175,13 @@ def main():
     CompAudio = CompositeAudioClip(aClips)
     CompAudio = CompAudio.set_duration(sDuration)
     print("Preparing video comp: %s seconds" % vDuration)
+    vClips.extend(eClips)
     CompVideo = CompositeVideoClip(vClips)
     CompVideo = CompVideo.set_duration(sDuration)
-
-    FinalVideo = CompositeVideoClip([CompVideo, CompEvents])
-    FinalVideo = FinalVideo.set_duration(sDuration)
-    FinalVideo.audio = CompAudio
-
+    CompVideo.audio = CompAudio
 
     print("Writing to output.mp4")
-    FinalVideo = FinalVideo.write_videofile("output.mp4", fps=24, audio_codec='aac', threads=8, codec='libx264')
+    CompVideo.write_videofile("output.mp4", fps=24, audio_codec='aac', threads=8, codec='libx264')
     print("Done!")
 
 
