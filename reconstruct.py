@@ -113,7 +113,7 @@ def main():
         offset = (dt - dtStart).seconds + ms/1000.0
         print("Offset: %s => Video %s" % (offset, file))
         
-        video = VideoFileClip("%s/%s" % (path, file), audio = False, target_resolution = (720, 1280))
+        video = VideoFileClip("%s/%s" % (path, file), audio = False)
         #print(" => Duration is %s" % video.duration)
 
         vDuration = vDuration + video.duration
