@@ -184,7 +184,7 @@ def main():
     CompVideo.audio = CompAudio
 
     print("Writing to output.mp4")
-    CompVideo.write_videofile("output.mp4", fps=30, audio_codec='aac', threads=16, codec='libx264')
+    CompVideo.write_videofile("output.mp4", fps=15, audio_codec='aac', threads=16, codec='libx264')
     print("Done!")
 
 
