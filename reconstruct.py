@@ -131,6 +131,9 @@ def main():
         date, time, ms = parse_date2(file)
         dt = datetime.datetime(date[0], date[1], date[2], time[0], time[1], time[2])
         offset = (dt - dtStart).seconds + ms/1000.0
+        # We drop the first audio block.. it seems to always be corrupted
+        if offset < 5.0:
+            continue
         print("[%i/%i] Offset: %s => Audio %s           " % (aFiles.index(file), len(aFiles), offset, file), end="\r")
 
         audio = AudioFileClip("%s/%s" % (path, file))   
@@ -170,18 +173,18 @@ def main():
     CompEvents = CompositeVideoClip(eClips)
     CompEvents = CompEvents.set_duration(sDuration)
 
-    print("Recording duration: %s seconds" % sDuration)
-    print("Preparing audio comp: %s seconds" % aDuration)
+    print("Recording duration: %s seconds " % (sDuration))
+    print("Preparing audio comp: %s seconds (%i %% Coverage)" % (aDuration, 100.0 * aDuration / sDuration))
     CompAudio = CompositeAudioClip(aClips)
     CompAudio = CompAudio.set_duration(sDuration)
-    print("Preparing video comp: %s seconds" % vDuration)
+    print("Preparing video comp: %s seconds (%i %% Coverage)" % (vDuration, 100.0 * vDuration / sDuration))
     vClips.extend(eClips)
     CompVideo = CompositeVideoClip(vClips)
     CompVideo = CompVideo.set_duration(sDuration)
     CompVideo.audio = CompAudio
 
     print("Writing to output.mp4")
-    CompVideo.write_videofile("output.mp4", fps=24, audio_codec='aac', threads=8, codec='libx264')
+    CompVideo.write_videofile("output.mp4", fps=30, audio_codec='aac', threads=16, codec='libx264')
     print("Done!")
 
 
