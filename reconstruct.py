@@ -111,7 +111,7 @@ def main():
         date, time, ms = parse_date2(file)
         dt = datetime.datetime(date[0], date[1], date[2], time[0], time[1], time[2])
         offset = (dt - dtStart).seconds + ms/1000.0
-        print("Offset: %s => Video %s" % (offset, file))
+        print("[%i/%i] Offset: %s => Video %s           " % (vFiles.index(file), len(vFiles), offset, file), end="\r")
         
         video = VideoFileClip("%s/%s" % (path, file), audio = False)
         #print(" => Duration is %s" % video.duration)
@@ -131,7 +131,7 @@ def main():
         date, time, ms = parse_date2(file)
         dt = datetime.datetime(date[0], date[1], date[2], time[0], time[1], time[2])
         offset = (dt - dtStart).seconds + ms/1000.0
-        print("Offset: %s => Audio %s" % (offset, file))
+        print("[%i/%i] Offset: %s => Audio %s           " % (aFiles.index(file), len(aFiles), offset, file), end="\r")
 
         audio = AudioFileClip("%s/%s" % (path, file))   
         #print(" => Duration is %s" % audio.duration)
@@ -139,7 +139,6 @@ def main():
         audio = audio.set_start(offset)
         audio = audio.set_duration(audio.duration)
         aClips.append(audio)
-
 
 
     print("Generating event labels...")
@@ -171,6 +170,7 @@ def main():
     CompEvents = CompositeVideoClip(eClips)
     CompEvents = CompEvents.set_duration(sDuration)
 
+    print("Recording duration: %s seconds" % sDuration)
     print("Preparing audio comp: %s seconds" % aDuration)
     CompAudio = CompositeAudioClip(aClips)
     CompAudio = CompAudio.set_duration(sDuration)
