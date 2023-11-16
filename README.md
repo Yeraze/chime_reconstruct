@@ -1,4 +1,4 @@
-Python script to for Chime Video Reconstruction
+Python script for Chime Video Reconstruction
 ---
 
 Basic usage:
@@ -6,7 +6,7 @@ Basic usage:
 * Run this script
 * Get an `output.mp4`
 
-To download, I recomment using `aws s3 cp --recursive s3://blah .`
+To download, I recommend using `aws s3 cp --recursive s3://blah .`
 
 Prerequisites
 * pip3 install moviepy
