@@ -97,7 +97,8 @@ def main():
     diff = dtEnd - dtStart
     sDuration = diff.seconds
 
-    print("Recording duration: %s seconds" % sDuration)
+    print("Recording duration: %i:%02i (%s seconds)" % 
+          (sDuration / 60, sDuration % 60, sDuration))
 
 
     # Start compositing all the bits and bobs
@@ -173,7 +174,8 @@ def main():
     CompEvents = CompositeVideoClip(eClips)
     CompEvents = CompEvents.set_duration(sDuration)
 
-    print("Recording duration: %s seconds " % (sDuration))
+    print("Recording duration: %i:%02i (%s seconds)" % 
+          (sDuration / 60, sDuration % 60, sDuration))
     print("Preparing audio comp: %s seconds (%i %% Coverage)" % (aDuration, 100.0 * aDuration / sDuration))
     CompAudio = CompositeAudioClip(aClips)
     CompAudio = CompAudio.set_duration(sDuration)
